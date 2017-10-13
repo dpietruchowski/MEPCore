@@ -1,128 +1,48 @@
 @startuml
 set namespaceSeparator ::
+!include mepcore_modules.iuml
+!include mepgenetic_modules.iuml
 
-abstract class MEP::Object {
-    +Object(uint id);
-    +uint score();
-    +uint id();
-    +void assess(const Fitness&);
-    +std::string write();
-    -{abstract}int assess(const Fitness&);
-    -{abstract}void write(std::string&);
-    -uint score_;
-    -uint id_;
-}
+    Object <|-- Gene
+    Object <|-- Chromosome
+    Object .up. mep::uint: score_
+    Object .up. mep::uint: id_
 
-abstract class MEP::Gene<Type> {
-    +Gene(uint id);
-    +void run(std::vector<Gene<Type>>&);
-    +void clear();
-    +bool isValid();
-    +{abstract}uint nArguments();
-    -{abstract}Type run(std::vector<Type>&)
-    -void write(std::string&);
-    -Type result_;
-}
+    Chromosome o-- Chromosome::Gene: genes_: vector
 
-class MEP::Chromosome<Type> {
-    +Chromosome(uint id);
-    +void AddGene(Gene&)
-    +void run();
-    +void clear();
-    +bool isCleared();
-    +Tree release();
-    -void write(std::string&);
-    -bool is_runed_;
-    -vector<Gene<Type>> genes_;
-}
+    Chromosome::Gene o-down- GenePtr: node
 
-class MEP::Chromosome::Gene<Type> {
-    +GenePtr<Type> node;
-    +std::unordered_set<uint> children;
-}
+    Gene <|-- FunctionGene
+    Gene <|-- TerminalGene
+    Gene .. mep::uint: nArgs_
+    Gene .. GenePtr: clone()
 
-class MEP::FunctionGene<Type> {
-    +FunctionGene(uint id);
-    +uint nArguments();
-    -void write(std::string&);
-    -Type run(std::vector<Type>&);
-    -FunctionPtr<Type> function_;
-}
-class MEP::TerminalGene<Type> {
-    +TerminalGene(uint id);
-    +uint nArguments();
-    -void write(std::string&);
-    -Type run(std::vector<Type>&);
-    -Type terminal_;
-}
-class MEP::Tree<Type> {
-    +Tree(uint id, Node root);
-    +void release();
-    -void write(std::string&);
-    +Chromosome<Type> release();
-    -Node<Type> root_;
-}
-class MEP::Node<Type> {
-    +Node(GenePtr);
-    +Type run();
-    +std::vector<Node<Type>> children;
-    -GenePtr<Type> gene_
-    -~Node();
-}
-MEP::Object <|-- MEP::Gene
-MEP::Object <|-- MEP::Chromosome
+    TerminalGene <|-- Tree
+    FunctionGene o-- mep::FunctionPtr
 
-MEP::Chromosome o-- MEP::Chromosome::Gene
+    Tree o-- Node: root_
 
-MEP::Chromosome::Gene o-left- MEP::Gene
+    Node o-up- GenePtr: gene_
+    Node o-- Node: children
 
-MEP::Gene <|-- MEP::FunctionGene
-MEP::Gene <|-- MEP::TerminalGene
-MEP::Gene -[hidden]right- MEP::Chromosome
-MEP::TerminalGene -[hidden]right- MEP::FunctionGene
+    Object .. Generator
 
-MEP::TerminalGene <|-- MEP::Tree
+    Object .. Fitness
 
-MEP::Tree o-- MEP::Node
+    Population o-right- Chromosome: population: vector
+    Population o-- Fitness: fitness_
+    Population o-- Generator
+    Population o-up- GeneticSelection
+    Population o-up- GeneticOperationGenerator
+    Population .up. mep::uint: size_
+    Fitness .up. mep::uint: measure()
+    Generator o-- mep::FunctionPtr
 
-class MEP::Generator<Type> {
-    +void register(FunctionPtr<Type>, double probability);
-    +void register(Type terminal, double probability);
-    +void register(GenePtr<Type>, double probability);
-    +void reset();
-    +GenePtr<Type> rand();
-    -std::vector<pair<uint, GenePtr<Type>>> original_;
-}
+    GeneticOperationGenerator o-- GeneticOperation
 
-MEP::Object .. MEP::Generator
-
-abstract class MEP::Fitness<Type> {
-    +Fitness(Type reference);
-    +void setReference(const Type &referece);
-    +uint measure(const Type& type);
-    -Type reference_;
-}
-MEP::Object .. MEP::Fitness
-MEP::Object -[hidden]left- MEP::GeneticOperation
-MEP::Object -[hidden]left- MEP::GeneticSelection
-
-class MEP::Population<Type> {
-    +Population(uint size, Type reference);
-    +void setReference(const Type &referece);
-    +void init();
-    +void run();
-    +Chromosome<Type> reproduce();
-    +Generator<Type> generator;
-    +GeneticOperationGenerator<Type> generator;
-    -GeneticSelectionPtr<Type> generator;
-    -FitnessPtr<Type> fitness;
-    -std::vector<Chromosome<Type>> population_;
-    -uint size_;
-}
-MEP::Population o-left- MEP::Chromosome
-MEP::Population o-- MEP::Fitness
-MEP::Population o-- MEP::Generator
-MEP::Population o-up- MEP::GeneticSelection
-MEP::Population o-up- MEP::GeneticOperationGenerator
+    Object -[hidden]left- GeneticOperation
+    Object -[hidden]left- GeneticSelection
+    TerminalGene -[hidden]right- FunctionGene
+    Chromosome -[hidden]left- Fitness
 
 @enduml

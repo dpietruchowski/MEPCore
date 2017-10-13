@@ -1,0 +1,17 @@
+hide enum methods
+hide <<typedef>> methods
+!definelong TYPEDEF(name, type)
+    class name <<(T,#B22222)typedef>> {
+        type
+    }
+!enddefinelong
+!definelong STRUCT(name)
+    class name <<(S,#FFD700)>>
+    hide "name" methods
+!enddefinelong
+!definelong PKG(name)
+    class name <<(P,#808080)>> {
+        More...
+    }
+    hide name methods
+!enddefinelong
