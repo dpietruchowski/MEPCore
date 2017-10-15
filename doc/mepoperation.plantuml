@@ -6,23 +6,24 @@
 namespace mep {
 package operation {
     abstract class Operation<Type> {
-        Operation(string name, uint nArgs);
-        +{abstract} Type run(const Args<Type>&);
+        +Operation(string &name, uint nArgs);
+        +Type run(const Args<Type>&);
         +string write();
+        -{abstract} Type runOperation(const Args<Type>&);
         -{abstract} void write(string&);
         -uint nArgs_;
         -std::string name_;
     }
 
     class Function<Type> {
-        +Function(FunctionPtr, string name,\n             uint nArgs);
-        +Type run(const Args<Type>&);
+        +Function(FunctionPtr, string &name,\n             uint nArgs);
+        -Type runOperation(const Args<Type>&);
         -void write(string&);
         -FunctionPtr<Type> function_;
     }
     class Terminal<Type> {
-        +Terminal(const Type& terminal,\n             string name);
-        +Type run(const Args<Type>&);
+        +Terminal(const Type& terminal,\n             string &name);
+        -Type runOperation(const Args<Type>&);
         -void write(string&);
         -Type terminal_;
     }

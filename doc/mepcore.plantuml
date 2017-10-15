@@ -23,11 +23,11 @@ package core {
 
     class Gene<Type> {
         -Operation<Type>* operation_;
-        -unordered_set<uint> children;
+        -vector<uint> children;
         -Type result_;
         -bool isCleared_;
         __
-        +Gene(uint id;
+        +Gene(uint id);
         +Gene(const Gene&);
         +Gene& operator=(const Gene&);
         +Gene(const Gene&&);
@@ -35,10 +35,11 @@ package core {
         __
         +void run(const vector<Gene<Type>*>&);
         +bool addChild(uint idx)
-        +uint getChild(uint childNumber);
+        +const vector<uint>& children() const;
         +void clear();
         +bool isCleared() const;
         +uint nArgs() const;
+        +const Type& result() const;
         -void assessObject(string&);
         -virtual void writeObject(string&) const;
     }
@@ -73,6 +74,7 @@ package core {
     Object <|-- Chromosome
     Object --> uint
     Chromosome o-left- Gene: genes_
+    Chromosome <-left- Gene: keeps idx to\n children
 }
 
 package types {
@@ -81,10 +83,15 @@ package types {
 
 package operation {
     abstract class Operation<Type>
-    Gene o-- Operation
+    Gene o-- Operation: raw pointer
     Operation ..> Args
 }
-}
 
+package genetic {
+    class OperationSet<Type>
+    Gene --> OperationSet: owns operation_
+    Operation --o OperationSet: owns
+}
+}
 
 @enduml
