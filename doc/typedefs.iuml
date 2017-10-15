@@ -1,0 +1,13 @@
+!include defines.iuml
+
+namespace mep {
+package types {
+
+hide empty member
+TYPEDEF("Args<Type>", "std::vector<Type*>")
+TYPEDEF("FunctionPtr<Type>", "Type (*)(const Args<Type>&)")
+show FunctionPtr methods
+TYPEDEF(uint, "unsigned int")
+
+}
+}

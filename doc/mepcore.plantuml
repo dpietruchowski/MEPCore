@@ -1,48 +1,90 @@
 @startuml
-set namespaceSeparator ::
-!include mepcore_modules.iuml
-!include mepgenetic_modules.iuml
+!include defines.iuml
+!include typedefs.iuml
+
+hide empty members
+
+namespace mep {
+package core {
+    abstract class Object {
+        +Object(uint id);
+        +Object(const Object&);
+        +Object& operator=(const Object&);
+        +virtual ~Object();
+        +uint score() const;
+        +uint id() const;
+        +void assess(const Fitness&);
+        +string write() const;
+        -{abstract}uint assessObject(const Fitness&);
+        -{abstract}void writeObject(string&) const;
+        -uint score_;
+        -uint id_;
+    }
+
+    class Gene<Type> {
+        -Operation<Type>* operation_;
+        -unordered_set<uint> children;
+        -Type result_;
+        -bool isCleared_;
+        __
+        +Gene(uint id;
+        +Gene(const Gene&);
+        +Gene& operator=(const Gene&);
+        +Gene(const Gene&&);
+        +Gene& operator=(const Gene&&);
+        __
+        +void run(const vector<Gene<Type>*>&);
+        +bool addChild(uint idx)
+        +uint getChild(uint childNumber);
+        +void clear();
+        +bool isCleared() const;
+        +uint nArgs() const;
+        -void assessObject(string&);
+        -virtual void writeObject(string&) const;
+    }
+
+    class Chromosome<Type> {
+        -bool isRuned_;
+        -size_;
+        -vector<Gene<Type>> nodes_;
+        __
+        +Chromosome(uint id, uint size_);
+        +Chromosome(const Chromosome&);
+        +Chromosome& operator=(const Chromosome&);
+        +Chromosome(Chromosome&&);
+        +Chromosome& operator=(Chromosome&&);
+        +Chromosome(const vector<Chromosome&>&,\n                    const vector<uint>& cutPoints);
+        +const Gene<Type>& operator[](uint idx);
+        __
+        +void mutate(const Gene&, uint cutPoint);
+        +void init(const Generator&);
+        +void run();
+        +void clear();
+        +bool isCleared() const;
+        +bool isAssessed() const;
+        +bool isInitialize() const;
+        +uint size() const;
+        +Tree release();
+        -uint assessObject(const Fitness&);
+        -void writeObject(string&);
+    }
 
     Object <|-- Gene
     Object <|-- Chromosome
-    Object .up. mep::uint: score_
-    Object .up. mep::uint: id_
+    Object --> uint
+    Chromosome o-left- Gene: genes_
+}
 
-    Chromosome o-- Chromosome::Gene: genes_: vector
+package types {
+    FunctionPtr ..> Args
+}
 
-    Chromosome::Gene o-down- GenePtr: node
+package operation {
+    abstract class Operation<Type>
+    Gene o-- Operation
+    Operation ..> Args
+}
+}
 
-    Gene <|-- FunctionGene
-    Gene <|-- TerminalGene
-    Gene .. mep::uint: nArgs_
-    Gene .. GenePtr: clone()
-
-    TerminalGene <|-- Tree
-    FunctionGene o-- mep::FunctionPtr
-
-    Tree o-- Node: root_
-
-    Node o-up- GenePtr: gene_
-    Node o-- Node: children
-
-    Object .. Generator
-
-    Object .. Fitness
-
-    Population o-right- Chromosome: population: vector
-    Population o-- Fitness: fitness_
-    Population o-- Generator
-    Population o-up- GeneticSelection
-    Population o-up- GeneticOperationGenerator
-    Population .up. mep::uint: size_
-    Fitness .up. mep::uint: measure()
-    Generator o-- mep::FunctionPtr
-
-    GeneticOperationGenerator o-- GeneticOperation
-
-    Object -[hidden]left- GeneticOperation
-    Object -[hidden]left- GeneticSelection
-    TerminalGene -[hidden]right- FunctionGene
-    Chromosome -[hidden]left- Fitness
 
 @enduml

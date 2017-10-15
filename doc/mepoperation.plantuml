@@ -1,0 +1,63 @@
+@startuml
+
+!include defines.iuml
+!include typedefs.iuml
+
+namespace mep {
+package operation {
+    abstract class Operation<Type> {
+        Operation(string name, uint nArgs);
+        +{abstract} Type run(const Args<Type>&);
+        +string write();
+        -{abstract} void write(string&);
+        -uint nArgs_;
+        -std::string name_;
+    }
+
+    class Function<Type> {
+        +Function(FunctionPtr, string name,\n             uint nArgs);
+        +Type run(const Args<Type>&);
+        -void write(string&);
+        -FunctionPtr<Type> function_;
+    }
+    class Terminal<Type> {
+        +Terminal(const Type& terminal,\n             string name);
+        +Type run(const Args<Type>&);
+        -void write(string&);
+        -Type terminal_;
+    }
+
+    class Expression<Type> {
+        +Tree(uint id, Node root);
+        +GenePtr clone() const;
+        +void release();
+        -void writeObject(string&);
+        +Chromosome<Type> release();
+        -Node<Type> root_;
+    }
+
+    class Node<Type> {
+        +Node(GenePtr);
+        +Type run();
+        +vector<Node<Type>> children;
+        -GenePtr<Type> gene_
+        -~Node();
+    }
+    Operation --> uint
+
+    FunctionPtr ..> Args
+    Operation ..> Args: run()
+    Function ..> Args: run()
+    Terminal ..> Args: run()
+
+    Operation <|-- Function
+    Operation <|-- Terminal
+    Terminal <|-- Expression
+    Function o-- FunctionPtr: function_
+    Function -[hidden]right- Terminal
+    Expression o-- Node: root_
+}
+
+}
+
+@enduml
