@@ -20,12 +20,13 @@ SOURCES += \
     main.cpp
 
 HEADERS +=\
-    types.h \
     mepcore_global.h \
+    types.h \
     object.h \
     gene.h \
-    terminalgene.h \
-    functiongene.h
+    operation/operation.h \
+    operation/function.h \
+    operation/terminal.h
 
 unix {
     target.path = /usr/lib

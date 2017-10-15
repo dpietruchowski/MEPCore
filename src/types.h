@@ -9,21 +9,16 @@ namespace mep {
 using uint = unsigned int;
 
 template<typename Type>
-class Gene;
+using Args = std::vector<Type*>;
 
 template<typename Type>
-using GenePtr = std::unique_ptr<Gene<Type>>;
+class Operation;
+
+template<typename Type>
+using OperationPtr = std::unique_ptr<Operation<Type>>;
 
 template<typename Type>
 using FunctionPtr = Type (*)(const std::vector<Type*>&);
-
-template<typename Type>
-struct Function {
-    FunctionPtr<Type> ptr;
-    std::string name;
-    uint nArgs;
-};
-
 } // namespace mep
 
 #endif // TYPES_H
