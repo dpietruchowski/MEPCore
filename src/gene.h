@@ -5,10 +5,11 @@
 #include "object.h"
 #include "operation/operation.h"
 
-#include <string>
-#include <vector>
-#include <unordered_set>
 #include <assert.h>
+#include <string>
+#include <unordered_set>
+#include <vector>
+#include <iostream>
 
 namespace mep {
 
@@ -17,35 +18,42 @@ class Gene: public Object
 {
 public /* constructors and operators */:
     Gene(uint id, Operation<Type>* operation): Object(id),
-        operation_(operation), children_{}, isCleared_(true)
-    { }
-    Gene(const Gene& other): Object(other),
-        operation_(other.operation_), children_(other.children_),
-        isCleared_(true)
-    { }
-    Gene& operator=(const Gene& rhs) {
-        Object::operator =(rhs);
-        operation_ = rhs.operation_;
-        children_ = rhs.children_;
-        result_ = Type{};
-        isCleared_ = true;
-        return *this;
+        operation_(operation), children_{}, result_{}, isCleared_(true)
+    {
+        children_.reserve(operation->nArgs());
     }
-    Gene(Gene&& other): Object(other),
+    Gene(const Gene& other): Object(other),
+        operation_(other.operation_), children_(other.children_), result_{},
+        isCleared_(true)
+    { std::cout << "Gene Copy Constructor: " << writeShort() << std::endl; }
+    Gene& operator=(const Gene& rhs) {
+        if (&rhs != this) {
+            Object::operator =(rhs);
+            operation_ = rhs.operation_;
+            children_ = rhs.children_;
+            result_ = Type{};
+            isCleared_ = true;
+        }
+        std::cout << "Gene Copy Assignment: " << writeShort() << std::endl;
+        return *this;
+
+    }
+    Gene(Gene&& other): Object(std::move(other)),
         operation_(other.operation_), children_(std::move(other.children_)),
         result_{}, isCleared_(true) {
-        Gene(0, nullptr);
+        std::cout << "Gene Move Constructor: " << writeShort() << std::endl;
         other.children_.clear();
     }
     Gene& operator=(Gene&& rhs) {
         if (&rhs != this) {
-            Object::operator =(rhs);
+            Object::operator =(std::move(rhs));
             operation_ = rhs.operation_;
             children_ = std::move(rhs.children_);
             rhs.children_.clear();
             result_ = Type{};
             isCleared_ = true;
         }
+        std::cout << "Gene Move Assignment: " << writeShort() << std::endl;
         return *this;
     }
 public /* methods */:
@@ -86,6 +94,9 @@ protected:
             objectStr += std::to_string(child);
             objectStr += ", ";
         }
+    }
+    void writeShortObject(std::string &objectStr) const {
+        objectStr = "[" + objectStr + "]";
     }
 
 private /* methods */:

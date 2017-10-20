@@ -19,6 +19,7 @@ using OperationPtr = std::unique_ptr<Operation<Type>>;
 
 template<typename Type>
 using FunctionPtr = Type (*)(const std::vector<Type*>&);
+
 } // namespace mep
 
 #endif // TYPES_H
