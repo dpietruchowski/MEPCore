@@ -23,11 +23,11 @@ package core {
 
     class Gene<Type> {
         -Operation<Type>* operation_;
-        -vector<uint> children;
+        -vector<uint> children_;
         -Type result_;
         -bool isCleared_;
         __
-        +Gene(uint id);
+        +Gene(uint id, Operation<Type>*);
         +Gene(const Gene&);
         +Gene& operator=(const Gene&);
         +Gene(const Gene&&);
@@ -40,34 +40,33 @@ package core {
         +bool isCleared() const;
         +uint nArgs() const;
         +const Type& result() const;
+        #void writeObject(string&) const;
+        #void writeShortObject(string&) const;
         -void assessObject(string&);
-        -virtual void writeObject(string&) const;
     }
 
     class Chromosome<Type> {
-        -bool isRuned_;
-        -size_;
-        -vector<Gene<Type>> nodes_;
+        -vector<Gene<Type>> genes_;
         __
-        +Chromosome(uint id, uint size_);
+        +Chromosome(uint id, uint size);
         +Chromosome(const Chromosome&);
         +Chromosome& operator=(const Chromosome&);
         +Chromosome(Chromosome&&);
         +Chromosome& operator=(Chromosome&&);
-        +Chromosome(const vector<Chromosome&>&,\n                    const vector<uint>& cutPoints);
         +const Gene<Type>& operator[](uint idx);
         __
         +void mutate(const Gene&, uint cutPoint);
+        +void mutate(Gene&&, uint cutPoint);
+        +void crossover(const vector<Chromosome*>& parents,\n                      const set<uint>& cutPoints);
         +void init(const Generator&);
-        +void run();
-        +void clear();
-        +bool isCleared() const;
-        +bool isAssessed() const;
-        +bool isInitialize() const;
+        +void run(const Fitness&);
+        +bool isFull() const;
         +uint size() const;
         +Tree release();
-        -uint assessObject(const Fitness&);
-        -void writeObject(string&);
+        #void writeObject(string&) const;
+        #void writeShortObject(string&) const;
+        -void clear();
+        -void assessObject(string&);
     }
 
     Object <|-- Gene
