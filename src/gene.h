@@ -18,12 +18,12 @@ class Gene: public Object
 {
 public /* constructors and operators */:
     Gene(uint id, Operation<Type>* operation): Object(id),
-        operation_(operation), children_{}, result_{}, isCleared_(true)
+        operation_(operation), children_{}, result_(), isCleared_(true)
     {
         children_.reserve(operation->nArgs());
     }
     Gene(const Gene& other): Object(other),
-        operation_(other.operation_), children_(other.children_), result_{},
+        operation_(other.operation_), children_(other.children_), result_(),
         isCleared_(true)
     { std::cout << "Gene Copy Constructor: " << writeShort() << std::endl; }
     Gene& operator=(const Gene& rhs) {
@@ -31,7 +31,7 @@ public /* constructors and operators */:
             Object::operator =(rhs);
             operation_ = rhs.operation_;
             children_ = rhs.children_;
-            result_ = Type{};
+            result_ = Type();
             isCleared_ = true;
         }
         std::cout << "Gene Copy Assignment: " << writeShort() << std::endl;
@@ -40,7 +40,7 @@ public /* constructors and operators */:
     }
     Gene(Gene&& other): Object(std::move(other)),
         operation_(other.operation_), children_(std::move(other.children_)),
-        result_{}, isCleared_(true) {
+        result_(), isCleared_(true) {
         std::cout << "Gene Move Constructor: " << writeShort() << std::endl;
         other.children_.clear();
     }
@@ -50,7 +50,7 @@ public /* constructors and operators */:
             operation_ = rhs.operation_;
             children_ = std::move(rhs.children_);
             rhs.children_.clear();
-            result_ = Type{};
+            result_ = Type();
             isCleared_ = true;
         }
         std::cout << "Gene Move Assignment: " << writeShort() << std::endl;
