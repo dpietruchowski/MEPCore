@@ -20,5 +20,12 @@ TEMPLATE = app
 
 
 SOURCES += \
-    object_utest.cpp
+    main.cpp \
+    mepcoretest.cpp \
+    double.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
+
+HEADERS += \
+    mepcoretest.h \
+    modules.h \
+    double.h
