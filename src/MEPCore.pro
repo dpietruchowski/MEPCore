@@ -17,7 +17,8 @@ DEFINES += MEPCORE_LIBRARY
 
 SOURCES += \
     object.cpp \
-    main.cpp
+    main.cpp \
+    color.cpp
 
 HEADERS +=\
     mepcore_global.h \
@@ -26,7 +27,9 @@ HEADERS +=\
     gene.h \
     operation/operation.h \
     operation/function.h \
-    operation/terminal.h
+    operation/terminal.h \
+    chromosome.h \
+    color.h
 
 unix {
     target.path = /usr/lib
