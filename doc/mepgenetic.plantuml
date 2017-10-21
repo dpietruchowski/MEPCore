@@ -1,0 +1,95 @@
+@startuml
+!include defines.iuml
+
+hide empty members
+
+namespace mep {
+package genetic {
+
+    class GeneSet<Type> {
+        +void register(FunctionPtr<Type>, double probability);
+        +void register(Type terminal, double probability);
+        +void register(Operation*, double probability);
+        +void reset();
+        +Gene<Type>* rand();
+        -PtrSet<Type> geneSet_;
+    }
+    abstract class Fitness<Type> {
+        +Fitness(Type reference);
+        +void setReference(const Type &referece);
+        +uint measure(const Type& type);
+        -Type reference_;
+    }
+    class Population<Type> {
+        +Population(uint size, Type reference);
+        +void setReference(const Type &reference);
+        +void add(Chromosome<Type>&&);
+        +void add(const Chromosome<Type>&);
+        +void init();
+        +void run();
+        +Chromosome<Type> reproduce();
+        +GeneSet<Type> geneSet;
+        +PtrSet<Mutation<Type>> mutationSet;
+        +PtrSet<CrossoverSet<Type>> crossoverSet;
+        -GeneticSelectionPtr<Type> generator;
+        -FitnessPtr<Type> fitness;
+        -vector<Chromosome<Type>> population_;
+    }
+    abstract class Selection<Type> {
+        +void add(uint idx, uint score);
+        +uint select() const;
+        -{abstract} void normalize(map<idx, Score>&);
+        -{abstract} uint select(const map<idx, Score>&) const;
+        -map<idx, Score> scores_;
+        -uint worstScore;
+        -bool calculated_;
+    }
+    class Score {
+        +uint value;
+        +double normalized;
+    }
+
+    abstract class Mutation<Type> {
+        
+    }
+    abstract class Crossover<Type> {
+        
+    }
+    class PtrSet<Type> {
+        +void register(double probability, Type* ptr);
+        +void reset();
+        +Type* rand() const;
+        -map<double,unique_ptr<Type>> set_;
+    }
+
+    Selection o-- Score: scores_
+    Selection <|-- RankSelection
+    Selection <|-- TournamentSelection
+
+    Population o-right- Ptr: selection_
+    Population o-right- Ptr: fitness_
+    Ptr --> Selection
+    Ptr --> Fitness
+
+    Population o-- PtrSet: mutationSet
+    Population o-- PtrSet: crossoverSet
+    PtrSet --> Mutation
+    PtrSet -right-> Crossover
+    GeneSet o-- PtrSet
+
+    Mutation <|-- ArgumentMutation
+    Mutation <|-- CombinedMutation
+    Mutation <|-- OperationMutation
+    Crossover <|-- UniformCrossover
+    Crossover <|-- OnePointCrossover
+    Crossover <|-- TwoPointCrossover
+
+    Population o-left- GeneSet: geneSet
+
+}
+package core {
+    Population o-- Chromosome
+}
+}
+
+@enduml
