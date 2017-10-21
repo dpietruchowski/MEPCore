@@ -15,7 +15,7 @@ public:
     { }
 
 private /* methods */:
-    Type runOperation(const std::vector<Type*>& /* args */) const override {
+    Type runOperation(const Args<Type>& /* args */) const override {
         return terminal_.clone();
     }
     void write(std::string &objectStr) const override {

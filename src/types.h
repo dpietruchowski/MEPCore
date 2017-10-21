@@ -7,9 +7,23 @@
 namespace mep {
 
 using uint = unsigned int;
+using IdxArgs = std::vector<uint>;
 
 template<typename Type>
 using Args = std::vector<Type*>;
+
+template<typename Type>
+class Gene;
+template<typename Type>
+using GeneArgs = Args<Gene<Type>>;
+
+template<typename Type>
+using Genes = std::vector<Gene<Type>>;
+
+template<typename Type>
+class Chromosome;
+template<typename Type>
+using Parents = std::vector<Chromosome<Type>*>;
 
 template<typename Type>
 class Operation;

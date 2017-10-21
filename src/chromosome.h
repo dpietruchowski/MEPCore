@@ -120,7 +120,7 @@ public /* methods */:
     }
 
     /* The biggest parent must be eqaul or bigger than this child! */
-    void crossover(const std::vector<Chromosome*>& parents,
+    void crossover(const Parents<Type>& parents,
                    const std::set<uint>& cutPoints)
     {
         if(isFull())
@@ -204,7 +204,7 @@ private /* methods */:
             Gene<Type> &currentGene = genes_[current];
             if (!currentGene.isCleared())
                 continue;
-            std::vector<Gene<Type>*> args;
+            GeneArgs<Type> args;
             for(auto child: currentGene.children()) {
                 args.push_back(&genes_[child]);
             }
@@ -216,7 +216,7 @@ private /* methods */:
         Gene<Type> &currentGene = genes_[current];
         if(!currentGene.isCleared())
             return;
-        std::vector<Gene<Type>*> args;
+        Args<Type> args;
         for(auto child: currentGene.children()) {
             runGeneRecursive(child);
             args.push_back(&genes_[child]);
@@ -230,7 +230,7 @@ private /* methods */:
     }
 
 private:
-    std::vector<Gene<Type>> genes_;
+    Genes<Type> genes_;
     Gene<Type> *bestGene_;
 };
 

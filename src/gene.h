@@ -57,9 +57,9 @@ public /* constructors and operators */:
         return *this;
     }
 public /* methods */:
-    void run(const std::vector<Gene*>& args = {}) {
+    void run(const GeneArgs<Type>& args = {}) {
         assert(args.size() == nArgs());
-        std::vector<Type*> typeArgs;
+        Args<Type> typeArgs;
         for(const auto arg: args) {
             assert(!arg->isCleared());
             typeArgs.push_back(&arg->result_);
@@ -74,7 +74,7 @@ public /* methods */:
         return true;
     }
 
-    const std::vector<uint>& children() const {
+    const IdxArgs& children() const {
         return children_;
     }
 
@@ -106,7 +106,7 @@ private /* methods */:
 
 private:
     Operation<Type>* operation_;
-    std::vector<uint> children_;
+    IdxArgs children_;
     Type result_;
     bool isCleared_;
 };
