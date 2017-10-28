@@ -1,7 +1,7 @@
 #ifndef FUNCTION_H
 #define FUNCTION_H
 
-#include "types.h"
+#include "utils/types.h"
 #include "operation.h"
 
 namespace mep {

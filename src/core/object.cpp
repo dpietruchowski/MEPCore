@@ -7,12 +7,12 @@ namespace mep {
 
 const uint Object::MAX_SCORE = std::numeric_limits<uint>::max();
 
-Object::Object(uint id): id_(id), score_(MAX_SCORE), color_(Color::DEFAULT)
+Object::Object(uint id): color_(Color::DEFAULT), id_(id), score_(MAX_SCORE)
 {
 }
 
-Object::Object(const Object& other): id_(other.id_), score_(MAX_SCORE),
-    color_(other.color_)
+Object::Object(const Object& other):
+    color_(other.color_), id_(other.id_), score_(MAX_SCORE)
 {
 }
 
@@ -31,9 +31,9 @@ void Object::setColor(Color::Code color)
     color_ = color;
 }
 
-void Object::assess()
+void Object::setColor(const Color& color)
 {
-    score_ = assessObject();
+    color_ = color;
 }
 
 std::string Object::write() const
@@ -51,6 +51,11 @@ std::string Object::writeShort() const
     objectStr.resize(3, ' ');
     writeShortObject(objectStr);
     return objectStr;
+}
+
+void Object::setScore(uint score)
+{
+    score_ = score;
 }
 
 std::ostream &operator<<(std::ostream &os, const Object &obj)

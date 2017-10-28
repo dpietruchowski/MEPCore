@@ -1,7 +1,7 @@
 #ifndef OPERATION_H
 #define OPERATION_H
 
-#include "types.h"
+#include "utils/types.h"
 
 #include <string>
 #include <assert.h>

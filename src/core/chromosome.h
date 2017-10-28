@@ -1,10 +1,11 @@
 #ifndef CHROMOSOME_H
 #define CHROMOSOME_H
 
-#include "types.h"
+#include "utils/types.h"
 #include "gene.h"
 #include "object.h"
 #include "operation/operation.h"
+#include "genetic/operationset.h"
 
 #include <functional>
 #include <iostream>
@@ -52,7 +53,20 @@ public /* constructors and operatos */:
     }
 
 public /* interface */:
-    void run(/* const Fitness* */)
+    void init(OperationSet<Type>& set, uint startId) {
+        Gene<Type>& gene = emplaceGene(startId, set.terminal());
+        gene.setColor(color_);
+        for(uint i = 1; i < genes_.capacity(); ++i) {
+            Gene<Type>& gene = emplaceGene(i + startId, set.rand());
+            gene.setColor(color_);
+            UintRandom childRandom(0, i - 1);
+            for(uint ic = 0; ic < gene.nArgs(); ++ic) {
+                gene.addChild(childRandom());
+            }
+        }
+    }
+
+    void run(const Fitness<Type>* fitness)
     {
         for(uint i = genes_.size(); i > 0; --i) {
             uint idx = i - 1;
@@ -60,6 +74,7 @@ public /* interface */:
                 runGene(idx);
             }
         }
+        assess(fitness);
     }
 
 public /* methods */:
@@ -78,30 +93,20 @@ public /* methods */:
         return genes_.size();
     }
 
+    const Gene<Type>& at(uint idx) const {
+        assert(idx < genes_.size());
+        return genes_.at(idx);
+    }
+
     bool isFull() const {
         return genes_.size() >= genes_.capacity();
     }
 
-    bool addGene(const Gene<Type>& gene)
-    {
-        if(isFull())
-            return false;
-        genes_.emplace_back(gene);
-        return true;
-    }
-
-    bool addGene(Gene<Type>&& gene)
-    {
-        if(isFull())
-            return false;
-        genes_.emplace_back(std::move(gene));
-        return true;
-    }
-
-    Gene<Type>& emplaceGene(uint id, Operation<Type>* operation)
+    template<typename ...Args>
+    Gene<Type>& emplaceGene(Args&&... args)
     {
         if(!isFull())
-            genes_.emplace_back(id, operation);
+            genes_.emplace_back(args...);
         return genes_.back();
     }
 
@@ -156,7 +161,8 @@ public /* methods */:
             ++iter;
         }
         if(!isFull()) {
-            const Chromosome* parent = _parents.rbegin()->second;
+            const Chromosome* parent =
+                    _parents.lower_bound(genes_.capacity())->second;
             for(; idx < parent->size(); ++idx) {
                 assert(idx < parent->genes_.size());
                 addGene(parent->genes_[idx]);
@@ -173,10 +179,24 @@ public /* methods */:
         return chromosomeStr;
     }
 
+    void assess(const Fitness<Type>* fitness)
+    {
+        uint minScore = Object::MAX_SCORE;
+        for(auto& gene: genes_) {
+            gene.assess(fitness);
+            if(gene.score() < minScore) {
+                minScore = gene.score();
+                bestGene_ = &gene;
+            }
+        }
+        setScore(minScore);
+    }
+
 
 protected:
     void writeObject(std::string &objectStr) const
     {
+        objectStr += "\n";
         for(const auto& gene: genes_) {
             objectStr += gene.write();
             objectStr += "\n";
@@ -187,6 +207,22 @@ protected:
         objectStr = "{" + objectStr + "}";
     }
 private /* methods */:
+    bool addGene(const Gene<Type>& gene)
+    {
+        if(isFull())
+            return false;
+        genes_.emplace_back(gene);
+        return true;
+    }
+
+    bool addGene(Gene<Type>&& gene)
+    {
+        if(isFull())
+            return false;
+        genes_.emplace_back(std::move(gene));
+        return true;
+    }
+
     void runGene(uint idx) {
         std::deque<uint> q = {idx};
         std::deque<uint> queue = {idx};
@@ -222,11 +258,6 @@ private /* methods */:
             args.push_back(&genes_[child]);
         }
         currentGene.run(args);
-    }
-
-    uint assessObject(/* const Fitness& fitness */) const override
-    {
-        return 0;
     }
 
 private:

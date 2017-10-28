@@ -1,7 +1,7 @@
 #ifndef TERMINAL_H
 #define TERMINAL_H
 
-#include "types.h"
+#include "utils/types.h"
 #include "operation.h"
 
 namespace mep {

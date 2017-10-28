@@ -1,7 +1,7 @@
 #ifndef GENE_H
 #define GENE_H
 
-#include "types.h"
+#include "utils/types.h"
 #include "object.h"
 #include "operation/operation.h"
 
@@ -56,6 +56,19 @@ public /* constructors and operators */:
         std::cout << "Gene Move Assignment: " << writeShort() << std::endl;
         return *this;
     }
+    /// Mutation Constructors and Assigments
+    Gene(const Gene& other, Operation<Type>* operation): Object(other),
+        operation_(operation), children_(other.children_), result_(),
+        isCleared_(true)
+    {
+        while(children_.size() > operation_->nArgs()) {
+            children_.pop_back();
+        }
+    }
+    Gene(const Gene& other, const IdxArgs& children): Object(other),
+        operation_(other.operation_), children_(children), result_(),
+        isCleared_(true)
+    { }
 public /* methods */:
     void run(const GeneArgs<Type>& args = {}) {
         assert(args.size() == nArgs());
@@ -87,6 +100,11 @@ public /* methods */:
     const Type& result() const {
         return result_;
     }
+    void assess(const Fitness<Type>* fitness) {
+        assert(!isCleared());
+        setScore(fitness->measure(result_));
+    }
+
 protected:
     virtual void writeObject(std::string &objectStr) const override {
         objectStr += operation_->write() + ", children: ";
@@ -97,11 +115,6 @@ protected:
     }
     void writeShortObject(std::string &objectStr) const {
         objectStr = "[" + objectStr + "]";
-    }
-
-private /* methods */:
-    uint assessObject(/* const Fitness& fitness */) const override {
-        return 0;
     }
 
 private:
