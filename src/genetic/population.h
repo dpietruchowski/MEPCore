@@ -1,6 +1,7 @@
 #ifndef POPULATION_H
 #define POPULATION_H
 
+#include "utils/log.h"
 #include "operationset.h"
 #include "selection.h"
 #include "mutation.h"
@@ -24,18 +25,20 @@ public:
     }
 
     void init(uint individualSize) {
+        PopulationLog(DEBUG) << "Initialization...";
         for(uint i = 0; i < population_.capacity(); ++i) {
-            Chromosome<Type> individual(i, individualSize);
-            individual.init(operationSet, i);
+            Chromosome<Type> individual(i + i*individualSize, individualSize);
+            individual.init(operationSet, i + i*individualSize);
             add(std::move(individual));
         }
     }
 
     Chromosome<Type> reproduce() const {
-
+        PopulationLog(DEBUG) << "Reproduction...";
     }
 
     void add(Chromosome<Type>&& individual) {
+        PopulationLog(DEBUG) << "Adding individual... " << individual.writeShort();
         individual.run(fitness_.get());
         Chromosome<Type>* inserted = nullptr;
         if(population_.size() < population_.capacity()) {

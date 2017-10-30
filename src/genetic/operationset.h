@@ -3,6 +3,7 @@
 
 #include "ptrset.h"
 #include "utils/types.h"
+#include "utils/log.h"
 #include "operation.h"
 
 namespace mep {
@@ -33,7 +34,9 @@ public:
     }
 
     Operation<Type>* rand() {
-        return set_.rand();
+        Operation<Type>* operation = set_.rand();
+        ChromosomeLog(DEBUG) << "Random operation: " << operation->write();
+        return operation;
     }
     Operation<Type>* terminal() {
         return &terminal_;

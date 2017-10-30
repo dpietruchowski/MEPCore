@@ -23,7 +23,8 @@ SOURCES += \
     genetic/selection.cpp \
     genetic/tournamentselection.cpp \
     genetic/rouletteselection.cpp \
-    genetic/mutation.cpp
+    genetic/mutation.cpp \
+    utils/log.cpp
 
 HEADERS +=\
     mepcore_global.h \
@@ -46,7 +47,9 @@ HEADERS +=\
     genetic/crossover.h \
     core.h \
     genetic.h \
-    operation.h
+    operation.h \
+    genetic/population.h \
+    utils/log.h
 
 unix {
     target.path = /usr/lib

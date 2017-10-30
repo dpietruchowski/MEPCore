@@ -2,6 +2,7 @@
 #define CHROMOSOME_H
 
 #include "utils/types.h"
+#include "utils/log.h"
 #include "gene.h"
 #include "object.h"
 #include "operation/operation.h"
@@ -28,19 +29,23 @@ public /* constructors and operatos */:
     }
     Chromosome(const Chromosome& other): Object(other),
         genes_(other.genes_)
-    { std::cout << "Chromosome Copy Constructor: " << id() << std::endl; }
+    {
+        ChromosomeLog(DEBUG) << writeShort() << " Copy constructor";
+    }
     Chromosome& operator=(const Chromosome& rhs)
     {
         if (&rhs != this) {
             Object::operator =(rhs);
             genes_ = rhs.genes_;
         }
-        std::cout << "Chromosome Copy Assignment: " << writeShort() << std::endl;
+        ChromosomeLog(DEBUG) << writeShort() << " Copy assignment";
         return *this;
     }
     Chromosome(Chromosome&& other): Object(std::move(other)),
         genes_(std::move(other.genes_))
-    { std::cout << "Chromosome Move Constructor: " << writeShort() << std::endl; }
+    {
+        ChromosomeLog(DEBUG) << writeShort() << " Move constructor";
+    }
     Chromosome& operator=(Chromosome&& rhs)
     {
         if (&rhs != this) {
@@ -48,12 +53,13 @@ public /* constructors and operatos */:
             genes_ = std::move(rhs.genes_);
             rhs.genes_.clear();
         }
-        std::cout << "Chromosome Move Assignment: " << writeShort() << std::endl;
+        ChromosomeLog(DEBUG) << writeShort() << " Move assignment";
         return *this;
     }
 
 public /* interface */:
     void init(OperationSet<Type>& set, uint startId) {
+        ChromosomeLog(DEBUG) << writeShort() << " Initialization...";
         Gene<Type>& gene = emplaceGene(startId, set.terminal());
         gene.setColor(color_);
         for(uint i = 1; i < genes_.capacity(); ++i) {
@@ -68,6 +74,7 @@ public /* interface */:
 
     void run(const Fitness<Type>* fitness)
     {
+        ChromosomeLog(DEBUG) << *this << " Running...";
         for(uint i = genes_.size(); i > 0; --i) {
             uint idx = i - 1;
             if(genes_[idx].isCleared()) {
@@ -113,6 +120,7 @@ public /* methods */:
 
     void mutate(const Gene<Type>& gene, uint cutPoint)
     {
+        ChromosomeLog(DEBUG) << *this << " Copy mutation";
         if(!isFull() || cutPoint >= genes_.size())
             return;
         genes_[cutPoint] = gene;
@@ -120,6 +128,7 @@ public /* methods */:
 
     void mutate(Gene<Type>&& gene, uint cutPoint)
     {
+        ChromosomeLog(DEBUG) << *this << " Move mutation";
         if(!isFull() || cutPoint >= genes_.size())
             return;
         genes_[cutPoint] = std::move(gene);
@@ -129,6 +138,10 @@ public /* methods */:
     void crossover(const Parents<Type>& parents,
                    const std::set<uint>& cutPoints)
     {
+        ChromosomeLog(DEBUG) << writeShort() << " Crossover, parents:";
+        for(const auto& parent: parents) {
+            ChromosomeLog(DEBUG) << *parent;
+        }
         if(isFull())
             return;
         if(cutPoints.size() == 0 || parents.size() == 0)
@@ -169,6 +182,7 @@ public /* methods */:
                 addGene(parent->genes_[idx]);
             }
         }
+        ChromosomeLog(DEBUG) << "Child: " << *this;
     }
 
     std::string writeLine() const

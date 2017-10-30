@@ -1,6 +1,7 @@
 #include "selection.h"
 
 #include "core/object.h"
+#include "utils/log.h"
 
 #include <assert.h>
 #include <iostream>
@@ -26,11 +27,13 @@ void Selection::add(uint idx, uint score, uint rank)
 uint Selection::select()
 {
     if(!calculated_) {
-        std::cout << "Normalize score" << std::endl;
+        PopulationLog(DEBUG) << "Normalize scores";
         normalize(scores_, worstScore_);
         calculated_ = true;
     }
-    return selectIdx(scores_);
+    uint idx = selectIdx(scores_);
+    PopulationLog(DEBUG) << "Selected index: " << idx;
+    return idx;
 }
 
 Selection::Score Selection::FitnessScore::add(uint score, uint /* rank */) const

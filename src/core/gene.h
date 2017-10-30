@@ -2,6 +2,7 @@
 #define GENE_H
 
 #include "utils/types.h"
+#include "utils/log.h"
 #include "object.h"
 #include "operation/operation.h"
 
@@ -25,7 +26,9 @@ public /* constructors and operators */:
     Gene(const Gene& other): Object(other),
         operation_(other.operation_), children_(other.children_), result_(),
         isCleared_(true)
-    { std::cout << "Gene Copy Constructor: " << writeShort() << std::endl; }
+    {
+        GeneLog(DEBUG) << writeShort() << " Copy constructor";
+    }
     Gene& operator=(const Gene& rhs) {
         if (&rhs != this) {
             Object::operator =(rhs);
@@ -34,14 +37,14 @@ public /* constructors and operators */:
             result_ = Type();
             isCleared_ = true;
         }
-        std::cout << "Gene Copy Assignment: " << writeShort() << std::endl;
+        GeneLog(DEBUG) << writeShort() << " Copy assignment";
         return *this;
 
     }
     Gene(Gene&& other): Object(std::move(other)),
         operation_(other.operation_), children_(std::move(other.children_)),
         result_(), isCleared_(true) {
-        std::cout << "Gene Move Constructor: " << writeShort() << std::endl;
+        GeneLog(DEBUG) << writeShort() << " Move constructor";
         other.children_.clear();
     }
     Gene& operator=(Gene&& rhs) {
@@ -53,10 +56,10 @@ public /* constructors and operators */:
             result_ = Type();
             isCleared_ = true;
         }
-        std::cout << "Gene Move Assignment: " << writeShort() << std::endl;
+        GeneLog(DEBUG) << writeShort() << " Move assignment";
         return *this;
     }
-    /// Mutation Constructors and Assigments
+    /// Mutation Constructors
     Gene(const Gene& other, Operation<Type>* operation): Object(other),
         operation_(operation), children_(other.children_), result_(),
         isCleared_(true)
@@ -64,13 +67,17 @@ public /* constructors and operators */:
         while(children_.size() > operation_->nArgs()) {
             children_.pop_back();
         }
+        GeneLog(DEBUG) << writeShort() << "Attr Mutation constructor";
     }
     Gene(const Gene& other, const IdxArgs& children): Object(other),
         operation_(other.operation_), children_(children), result_(),
         isCleared_(true)
-    { }
+    {
+        GeneLog(DEBUG) << writeShort() << "Args Mutation constructor";
+    }
 public /* methods */:
     void run(const GeneArgs<Type>& args = {}) {
+        GeneLog(DEBUG) << writeShort() << " Running...";
         assert(args.size() == nArgs());
         Args<Type> typeArgs;
         for(const auto arg: args) {
@@ -101,8 +108,12 @@ public /* methods */:
         return result_;
     }
     void assess(const Fitness<Type>* fitness) {
+        GeneLog log(DEBUG);
+        log << writeShort() << " Assessing... score: ";
         assert(!isCleared());
-        setScore(fitness->measure(result_));
+        uint score = fitness->measure(result_);
+        log << score;
+        setScore(score);
     }
 
 protected:
