@@ -8,5 +8,6 @@
 #include "genetic/tournamentselection.h"
 #include "genetic/mutation.h"
 #include "genetic/crossover.h"
+#include "genetic/population.h"
 
 #endif // GENETIC_H

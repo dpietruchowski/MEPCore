@@ -12,7 +12,10 @@ class OperationSet
 {
 public:
     OperationSet(const Type& terminal, const std::string& name):
-        terminal_(new Terminal<Type>(terminal, name))
+        terminal_(terminal, name)
+    { }
+    OperationSet(const Terminal<Type>& terminal):
+        terminal_(terminal)
     { }
 
     void registerPtr(double probability, Operation<Type>* ptr) {
@@ -33,7 +36,7 @@ public:
         return set_.rand();
     }
     Operation<Type>* terminal() {
-        return terminal_.get();
+        return &terminal_;
     }
 
     void reset() {
@@ -42,7 +45,7 @@ public:
 
 private:
     PtrSet<Operation<Type>> set_;
-    std::unique_ptr<Operation<Type>> terminal_;
+    Terminal<Type> terminal_;
 };
 
 }

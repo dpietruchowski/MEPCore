@@ -73,8 +73,9 @@ public /* interface */:
             if(genes_[idx].isCleared()) {
                 runGene(idx);
             }
+            genes_[idx].assess(fitness);
         }
-        assess(fitness);
+        assess();
     }
 
 public /* methods */:
@@ -179,11 +180,10 @@ public /* methods */:
         return chromosomeStr;
     }
 
-    void assess(const Fitness<Type>* fitness)
+    void assess()
     {
         uint minScore = Object::MAX_SCORE;
         for(auto& gene: genes_) {
-            gene.assess(fitness);
             if(gene.score() < minScore) {
                 minScore = gene.score();
                 bestGene_ = &gene;
