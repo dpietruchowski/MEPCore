@@ -1,5 +1,5 @@
-#ifndef COLOR_H
-#define COLOR_H
+#ifndef MEP_UTILS_COLOR_H
+#define MEP_UTILS_COLOR_H
 
 #include <string>
 #include <iostream>
@@ -32,4 +32,4 @@ private:
 
 }
 
-#endif // COLOR_H
+#endif // MEP_UTILS_COLOR_H

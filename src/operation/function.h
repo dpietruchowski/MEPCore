@@ -1,5 +1,5 @@
-#ifndef FUNCTION_H
-#define FUNCTION_H
+#ifndef MEP_CORE_FUNCTION_H
+#define MEP_CORE_FUNCTION_H
 
 #include "utils/types.h"
 #include "operation.h"
@@ -26,4 +26,4 @@ private:
 };
 
 }
-#endif // FUNCTION_H
+#endif // MEP_CORE_FUNCTION_H

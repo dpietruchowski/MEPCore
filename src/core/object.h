@@ -1,5 +1,5 @@
-#ifndef MEPOBJECT_H
-#define MEPOBJECT_H
+#ifndef MEP_CORE_OBJECT_H
+#define MEP_CORE_OBJECT_H
 
 #include "utils/types.h"
 #include "utils/color.h"
@@ -39,4 +39,4 @@ private:
 
 } // namespace mep
 
-#endif // MEPOBJECT_H
+#endif // MEP_CORE_OBJECT_H

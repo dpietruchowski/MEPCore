@@ -1,5 +1,5 @@
-#ifndef LOG_H
-#define LOG_H
+#ifndef MEP_UTILS_LOG_H
+#define MEP_UTILS_LOG_H
 
 #include <sstream>
 
@@ -11,7 +11,8 @@ enum LogLevel {
     ERROR,
     WARNING,
     INFO,
-    DEBUG
+    DEBUG,
+    CONSTRUCTORS
 };
 
 enum LogTag {
@@ -23,6 +24,7 @@ enum LogTag {
 class Log
 {
 public:
+    static LogLevel MAX_LEVEL;
     Log(LogLevel level, LogTag tag, Color color);
     ~Log();
 
@@ -37,7 +39,8 @@ private /* methods */:
     const char* toString(LogLevel level);
 
 private:
-     std::ostringstream os_;
+    bool logOn_;
+    std::ostringstream os_;
 };
 
 class GeneLog: public Log
@@ -75,4 +78,4 @@ public:
 
 }
 
-#endif // LOG_H
+#endif // MEP_UTILS_LOG_H

@@ -1,5 +1,5 @@
-#ifndef TYPES_H
-#define TYPES_H
+#ifndef MEP_UTILS_TYPES_H
+#define MEP_UTILS_TYPES_H
 
 #include <memory>
 #include <vector>
@@ -32,8 +32,8 @@ template<typename Type>
 using OperationPtr = std::unique_ptr<Operation<Type>>;
 
 template<typename Type>
-using FunctionPtr = Type (*)(const std::vector<Type*>&);
+using FunctionPtr = Type (*)(const Args<Type>&);
 
 } // namespace mep
 
-#endif // TYPES_H
+#endif // MEP_UTILS_TYPES_H

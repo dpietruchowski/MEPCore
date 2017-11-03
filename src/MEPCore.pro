@@ -49,7 +49,8 @@ HEADERS +=\
     genetic.h \
     operation.h \
     genetic/population.h \
-    utils/log.h
+    utils/log.h \
+    utils/modules.h
 
 unix {
     target.path = /usr/lib

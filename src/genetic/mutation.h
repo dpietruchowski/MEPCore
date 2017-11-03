@@ -1,9 +1,10 @@
-#ifndef MUTATION_H
-#define MUTATION_H
+#ifndef MEP_GENETIC_MUTATION_H
+#define MEP_GENETIC_MUTATION_H
 
 #include "core/chromosome.h"
 #include "core/gene.h"
 #include "utils/random.h"
+#include "utils/log.h"
 #include "genetic/operationset.h"
 
 namespace mep {
@@ -12,8 +13,8 @@ template<typename Type>
 class Mutation {
 public:
     void operator()(OperationSet<Type>& operationSet,
-                    Chromosome<Type>& child,
-                    uint nGenes) {
+                    Chromosome<Type>& child) {
+        uint nGenes = UintRandom(1, (child.size() + 1) / 2)();
         for(uint i = 0; i < nGenes; ++i) {
             auto size = child.size();
             UintRandom random(1, size - 1);
@@ -36,8 +37,9 @@ private:
     Gene<Type> createGene(OperationSet<Type>& /* operationSet */,
                           const Gene<Type>& mutated,
                           uint cutPoint) const override {
+        PopulationLog(DEBUG) << "Argument Mutation...";
         IdxArgs newArgs;
-        UintRandom childRandom(0, cutPoint);
+        UintRandom childRandom(0, cutPoint - 1);
         for(uint i = 0; i < mutated.nArgs(); ++i) {
             newArgs.push_back(childRandom());
         }
@@ -52,8 +54,9 @@ private:
     Gene<Type> createGene(OperationSet<Type>& operationSet,
                           const Gene<Type>& mutated,
                           uint cutPoint) const override {
+        PopulationLog(DEBUG) << "Attribute Mutation...";
         Gene<Type> newGene(mutated, operationSet.rand());
-        UintRandom childRandom(0, cutPoint);
+        UintRandom childRandom(0, cutPoint - 1);
         while(newGene.children().size() < newGene.nArgs()) {
             newGene.addChild(childRandom());
         }
@@ -68,9 +71,10 @@ private:
     Gene<Type> createGene(OperationSet<Type>& operationSet,
                           const Gene<Type>& /* mutated */,
                           uint cutPoint) const override {
+        PopulationLog(DEBUG) << "Combined Mutation...";
         //TODO newGene id should not be always 0
         Gene<Type> newGene(0, operationSet.rand());
-        UintRandom childRandom(0, cutPoint);
+        UintRandom childRandom(0, cutPoint - 1);
         for(uint i = 0; i < newGene.nArgs(); ++i) {
             newGene.addChild(childRandom());
         }
@@ -80,4 +84,4 @@ private:
 
 }
 
-#endif // MUTATION_H
+#endif // MEP_GENETIC_MUTATION_H

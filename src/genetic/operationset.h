@@ -1,5 +1,5 @@
-#ifndef OPERATIONSET_H
-#define OPERATIONSET_H
+#ifndef MEP_GENETIC_OPERATIONSET_H
+#define MEP_GENETIC_OPERATIONSET_H
 
 #include "ptrset.h"
 #include "utils/types.h"
@@ -53,4 +53,4 @@ private:
 
 }
 
-#endif // OPERATIONSET_H
+#endif // MEP_GENETIC_OPERATIONSET_H

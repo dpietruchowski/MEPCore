@@ -1,5 +1,5 @@
-#ifndef CROSSOVER_H
-#define CROSSOVER_H
+#ifndef MEP_GENETIC_CROSSOVER_H
+#define MEP_GENETIC_CROSSOVER_H
 
 #include "core/chromosome.h"
 #include "utils/random.h"
@@ -64,4 +64,4 @@ private:
 }
 
 
-#endif // CROSSOVER_H
+#endif // MEP_GENETIC_CROSSOVER_H

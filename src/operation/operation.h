@@ -1,5 +1,5 @@
-#ifndef OPERATION_H
-#define OPERATION_H
+#ifndef MEP_CORE_OPERATION_H
+#define MEP_CORE_OPERATION_H
 
 #include "utils/types.h"
 
@@ -39,4 +39,4 @@ private:
 
 }
 
-#endif // OPERATION_H
+#endif // MEP_CORE_OPERATION_H

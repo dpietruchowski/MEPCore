@@ -1,5 +1,5 @@
-#ifndef GENETIC_H
-#define GENETIC_H
+#ifndef MEP_GENETIC_H
+#define MEP_GENETIC_H
 
 #include "genetic/operationset.h"
 #include "genetic/fitness.h"
@@ -10,4 +10,4 @@
 #include "genetic/crossover.h"
 #include "genetic/population.h"
 
-#endif // GENETIC_H
+#endif // MEP_GENETIC_H

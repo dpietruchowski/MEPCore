@@ -1,8 +1,8 @@
-#ifndef CORE_H
-#define CORE_H
+#ifndef MEP_CORE_H
+#define MEP_CORE_H
 
 #include "core/object.h"
 #include "core/gene.h"
 #include "core/chromosome.h"
 
-#endif // CORE_H
+#endif // MEP_CORE_H

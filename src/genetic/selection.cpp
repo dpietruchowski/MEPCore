@@ -24,6 +24,13 @@ void Selection::add(uint idx, uint score, uint rank)
     calculated_ = false;
 }
 
+void Selection::reset()
+{
+    scores_.clear();
+    worstScore_ = 0;
+    calculated_ = false;
+}
+
 uint Selection::select()
 {
     if(!calculated_) {

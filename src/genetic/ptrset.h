@@ -1,5 +1,5 @@
-#ifndef PTRSET_H
-#define PTRSET_H
+#ifndef MEP_GENETIC_PTRSET_H
+#define MEP_GENETIC_PTRSET_H
 
 #include "utils/random.h"
 
@@ -72,4 +72,4 @@ private:
 
 }
 
-#endif // PTRSET_H
+#endif // MEP_GENETIC_PTRSET_H

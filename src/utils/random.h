@@ -1,5 +1,5 @@
-#ifndef RANDOM_H
-#define RANDOM_H
+#ifndef MEP_UTILS_RANDOM_H
+#define MEP_UTILS_RANDOM_H
 
 #include "types.h"
 #include <random>
@@ -51,4 +51,4 @@ private:
 
 }
 
-#endif // RANDOM_H
+#endif // MEP_UTILS_RANDOM_H

@@ -1,5 +1,5 @@
-#ifndef GENE_H
-#define GENE_H
+#ifndef MEP_CORE_GENE_H
+#define MEP_CORE_GENE_H
 
 #include "utils/types.h"
 #include "utils/log.h"
@@ -27,7 +27,7 @@ public /* constructors and operators */:
         operation_(other.operation_), children_(other.children_), result_(),
         isCleared_(true)
     {
-        GeneLog(DEBUG) << writeShort() << " Copy constructor";
+        GeneLog(CONSTRUCTORS) << writeShort() << " Copy constructor";
     }
     Gene& operator=(const Gene& rhs) {
         if (&rhs != this) {
@@ -37,14 +37,14 @@ public /* constructors and operators */:
             result_ = Type();
             isCleared_ = true;
         }
-        GeneLog(DEBUG) << writeShort() << " Copy assignment";
+        GeneLog(CONSTRUCTORS) << writeShort() << " Copy assignment";
         return *this;
 
     }
     Gene(Gene&& other): Object(std::move(other)),
         operation_(other.operation_), children_(std::move(other.children_)),
         result_(), isCleared_(true) {
-        GeneLog(DEBUG) << writeShort() << " Move constructor";
+        GeneLog(CONSTRUCTORS) << writeShort() << " Move constructor";
         other.children_.clear();
     }
     Gene& operator=(Gene&& rhs) {
@@ -56,7 +56,7 @@ public /* constructors and operators */:
             result_ = Type();
             isCleared_ = true;
         }
-        GeneLog(DEBUG) << writeShort() << " Move assignment";
+        GeneLog(CONSTRUCTORS) << writeShort() << " Move assignment";
         return *this;
     }
     /// Mutation Constructors
@@ -137,4 +137,4 @@ private:
 
 } // namespace mep
 
-#endif // GENE_H
+#endif // MEP_CORE_GENE_H

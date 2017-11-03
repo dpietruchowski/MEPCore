@@ -1,5 +1,5 @@
-#ifndef FITNESS_H
-#define FITNESS_H
+#ifndef MEP_GENETIC_FITNESS_H
+#define MEP_GENETIC_FITNESS_H
 
 #include "utils/types.h"
 
@@ -30,4 +30,4 @@ private:
 
 }
 
-#endif // FITNESS_H
+#endif // MEP_GENETIC_FITNESS_H

@@ -6,20 +6,31 @@
 
 namespace mep {
 
+LogLevel Log::MAX_LEVEL = DEBUG;
+
 Log::Log(LogLevel level, LogTag tag, Color color)
 {
-    std::string levelTag = toString(level);
-    levelTag += ':';
-    levelTag += toString(tag);
-    levelTag.resize(15, ' ');
-    levelTag += ": ";
-    os_ << color + levelTag;
+    if(level <= MAX_LEVEL)
+        logOn_ = true;
+    else
+        logOn_ = false;
+
+    if(logOn_) {
+        std::string levelTag = toString(level);
+        levelTag += ':';
+        levelTag += toString(tag);
+        levelTag.resize(15, ' ');
+        levelTag += ": ";
+        os_ << color + levelTag;
+    }
 }
 
 Log::~Log() {
-    os_ << std::endl;
-    fprintf(stderr, "%s", os_.str().c_str());
-    fflush(stderr);
+    if(logOn_) {
+        os_ << std::endl;
+        fprintf(stderr, "%s", os_.str().c_str());
+        fflush(stderr);
+    }
 }
 
 const char *Log::toString(LogTag tag)
@@ -39,6 +50,7 @@ const char* Log::toString(LogLevel level)
     case WARNING: return "W";
     case INFO: return "I";
     case DEBUG: return "D";
+    case CONSTRUCTORS: return "C";
     default: return "L";
     }
 }

@@ -1,5 +1,5 @@
-#ifndef SELECTION_H
-#define SELECTION_H
+#ifndef MEP_GENETIC_SELECTION_H
+#define MEP_GENETIC_SELECTION_H
 
 #include <map>
 #include <memory>
@@ -29,6 +29,7 @@ public:
     { }
 
     void add(uint idx, uint score, uint rank);
+    void reset();
     uint select();
 
 private /* methods */:
@@ -44,4 +45,4 @@ private:
 
 }
 
-#endif // SELECTION_H
+#endif // MEP_GENETIC_SELECTION_H

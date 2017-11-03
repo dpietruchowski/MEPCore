@@ -1,5 +1,5 @@
-#ifndef CHROMOSOME_H
-#define CHROMOSOME_H
+#ifndef MEP_CORE_CHROMOSOME_H
+#define MEP_CORE_CHROMOSOME_H
 
 #include "utils/types.h"
 #include "utils/log.h"
@@ -30,7 +30,7 @@ public /* constructors and operatos */:
     Chromosome(const Chromosome& other): Object(other),
         genes_(other.genes_)
     {
-        ChromosomeLog(DEBUG) << writeShort() << " Copy constructor";
+        ChromosomeLog(CONSTRUCTORS) << writeShort() << " Copy constructor";
     }
     Chromosome& operator=(const Chromosome& rhs)
     {
@@ -38,13 +38,13 @@ public /* constructors and operatos */:
             Object::operator =(rhs);
             genes_ = rhs.genes_;
         }
-        ChromosomeLog(DEBUG) << writeShort() << " Copy assignment";
+        ChromosomeLog(CONSTRUCTORS) << writeShort() << " Copy assignment";
         return *this;
     }
     Chromosome(Chromosome&& other): Object(std::move(other)),
         genes_(std::move(other.genes_))
     {
-        ChromosomeLog(DEBUG) << writeShort() << " Move constructor";
+        ChromosomeLog(CONSTRUCTORS) << writeShort() << " Move constructor";
     }
     Chromosome& operator=(Chromosome&& rhs)
     {
@@ -53,7 +53,7 @@ public /* constructors and operatos */:
             genes_ = std::move(rhs.genes_);
             rhs.genes_.clear();
         }
-        ChromosomeLog(DEBUG) << writeShort() << " Move assignment";
+        ChromosomeLog(CONSTRUCTORS) << writeShort() << " Move assignment";
         return *this;
     }
 
@@ -81,8 +81,22 @@ public /* interface */:
                 runGene(idx);
             }
             genes_[idx].assess(fitness);
+            genes_[idx].clear();
         }
         assess();
+    }
+
+    void clear() {
+        for(auto& gene: genes_) {
+            gene.clear();
+        }
+    }
+
+    Type result() {
+        runGene(bestGeneIdx_);
+        Type result = genes_[bestGeneIdx_].result();
+        clear();
+        return result;
     }
 
 public /* methods */:
@@ -197,11 +211,14 @@ public /* methods */:
     void assess()
     {
         uint minScore = Object::MAX_SCORE;
+        uint i = 0;
         for(auto& gene: genes_) {
             if(gene.score() < minScore) {
                 minScore = gene.score();
                 bestGene_ = &gene;
+                bestGeneIdx_ = i;
             }
+            ++i;
         }
         setScore(minScore);
     }
@@ -277,8 +294,9 @@ private /* methods */:
 private:
     Genes<Type> genes_;
     Gene<Type> *bestGene_;
+    uint bestGeneIdx_;
 };
 
 } // namespace mep
 
-#endif // CHROMOSOME_H
+#endif // MEP_CORE_CHROMOSOME_H

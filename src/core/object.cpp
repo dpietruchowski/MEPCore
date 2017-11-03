@@ -12,7 +12,7 @@ Object::Object(uint id): color_(Color::DEFAULT), id_(id), score_(MAX_SCORE)
 }
 
 Object::Object(const Object& other):
-    color_(other.color_), id_(other.id_), score_(MAX_SCORE)
+    color_(other.color_), id_(other.id_), score_(other.score_)
 {
 }
 
