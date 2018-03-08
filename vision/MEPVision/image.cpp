@@ -1,5 +1,7 @@
 #include "image.h"
 
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include <iostream>
 
 Image::Image()
@@ -39,4 +41,10 @@ Image& Image::operator=(Image &&other)
 void Image::clear()
 {
     img.release();
+}
+
+void Image::show(const char* windowName)
+{
+    cv::imshow(windowName, img);
+    cv::waitKey(0);
 }

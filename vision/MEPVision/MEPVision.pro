@@ -13,9 +13,11 @@ LIBS += -lopencv_highgui -lopencv_core -lopencv_imgcodecs -lopencv_imgproc
 SOURCES += main.cpp \
     hammingfitness.cpp \
     image.cpp \
-    functions.cpp
+    functions.cpp \
+    morphology.cpp
 
 HEADERS += \
     hammingfitness.h \
     image.h \
-    functions.h
+    functions.h \
+    morphology.h

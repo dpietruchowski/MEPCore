@@ -12,6 +12,7 @@ struct Image
     Image& operator=(const Image& other);
     Image& operator=(Image&& other);
     void clear();
+    void show(const char* windowName);
 
     cv::Mat img;
 };

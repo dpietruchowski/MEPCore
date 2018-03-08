@@ -12,6 +12,7 @@ using namespace cv;
 #include "core.h"
 #include "genetic.h"
 #include "operation.h"
+#include "morphology.h"
 
 using Operation = mep::Operation<Image>;
 using Function = mep::Function<Image>;
@@ -46,21 +47,13 @@ int main()
     population.operationSet.registerPtr(
                 0.05, new Function(bitwiseXor, "xor", 2));
     population.operationSet.registerPtr(
-                0.1, new Function(recall, "recall", 2));
+                0.2, new Function(recall, "recall", 2));
     population.operationSet.registerPtr(
                 0.05, new Function(fillHoles, "fill", 1));
-    population.operationSet.registerPtr(
-                0.1, new Function(erosion, "erosion", 1));
-    population.operationSet.registerPtr(
-                0.1, new Function(dilation, "dilation", 1));
-    population.operationSet.registerPtr(
-                0.1, new Function(gradient, "gradient", 1));
-    population.operationSet.registerPtr(
-                0.1, new Function(open, "open", 1));
-    population.operationSet.registerPtr(
-                0.1, new Function(close, "close", 1));
-    population.operationSet.registerPtr(
-                0.1, new Function(blackHat, "blackHat", 1));
+    for(int i = 0; i < 10; ++i) {
+        population.operationSet.registerPtr(
+                0.05, new Morphology(MorphParams::random()));
+    }
     population.crossoverSet.registerPtr(0.4, new OnePointCrossover());
     population.crossoverSet.registerPtr(0.4, new TwoPointCrossover());
     population.crossoverSet.registerPtr(0.2, new UniformCrossover());
@@ -86,6 +79,8 @@ int main()
             } while(added);
         }
         std::cout << "///////////// Gen nr " << gen << " /////////" << std::endl;
+        auto result = population.best().result();
+        result.show("Result");
         population.movePopulation(std::move(tmpPopulation));
     }
 
