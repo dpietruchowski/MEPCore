@@ -6,13 +6,16 @@ hide empty members
 namespace mep {
 package genetic {
 
-    class GeneSet<Type> {
+    class OperationSet<Type> {
+        +void register(double probability, Operation<Type>*);
+        +void register(double probability, FunctionPtr<Type>,\n                   string name, uint nArgs);
+        +void register(double probability, const Type& terminal,\n                   string name);
         +void register(FunctionPtr<Type>, double probability);
         +void register(Type terminal, double probability);
         +void register(Operation*, double probability);
         +void reset();
-        +Gene<Type>* rand();
-        -PtrSet<Type> geneSet_;
+        +Operation<Type>* rand();
+        -PtrSet<Operation<Type>> set_;
     }
     abstract class Fitness<Type> {
         +Fitness(Type reference);
@@ -28,7 +31,7 @@ package genetic {
         +void init();
         +void run();
         +Chromosome<Type> reproduce();
-        +GeneSet<Type> geneSet;
+        +OperationSet<Type> operationSet;
         +PtrSet<Mutation<Type>> mutationSet;
         +PtrSet<CrossoverSet<Type>> crossoverSet;
         -GeneticSelectionPtr<Type> generator;
@@ -75,7 +78,7 @@ package genetic {
     Population o-- PtrSet: crossoverSet
     PtrSet --> Mutation
     PtrSet -right-> Crossover
-    GeneSet o-- PtrSet
+    OperationSet o-- PtrSet
 
     Mutation <|-- ArgumentMutation
     Mutation <|-- CombinedMutation
@@ -84,7 +87,7 @@ package genetic {
     Crossover <|-- OnePointCrossover
     Crossover <|-- TwoPointCrossover
 
-    Population o-left- GeneSet: geneSet
+    Population o-left- OperationSet: operationSet_
 
 }
 package core {

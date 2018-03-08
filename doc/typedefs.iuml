@@ -4,8 +4,13 @@ namespace mep {
 package types {
 
 hide empty member
+TYPEDEF("IdxArgs", "std::vector<uint>")
 TYPEDEF("Args<Type>", "std::vector<Type*>")
+TYPEDEF("GeneArgs<Type>", "Args<Gene<Typy>>")
 TYPEDEF("FunctionPtr<Type>", "Type (*)(const Args<Type>&)")
+TYPEDEF("Genes<Type>", "std::vector<Gene<Type>>")
+TYPEDEF("Parents<Type>", "std::vector<Chromosome<Type>*>")
+TYPEDEF("OperationPtr<Type>", "std::unique_ptr<Operation<Type>>")
 show FunctionPtr methods
 TYPEDEF(uint, "unsigned int")
 
