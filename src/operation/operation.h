@@ -14,6 +14,7 @@ public:
     Operation(const std::string& name, uint nArgs):
         name_(name), nArgs_(nArgs)
     { }
+    virtual ~Operation() = default;
 
     Type run(const Args<Type>& args) const {
         assert(args.size() == nArgs_);
