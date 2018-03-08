@@ -28,10 +28,20 @@ private Q_SLOTS:
     void smokeTest();
     void geneTerminalTest();
     void geneFunctionTest();
+    void geneMutationTest();
     void chromosomeConstructorTest();
     void chromosomeCrossoverTest();
     void chromosomeMutationTest();
     void chromosomeRunTest();
+    void randomTest();
+    void ptrSetTest();
+    void operationSetTest();
+    void TournamentTest();
+    void RouletteTest();
+    void mutationTest();
+    void crossoverTest();
+    void populationTest();
+    void logTest();
 };
 
 #endif // MEPCORETEST_H

@@ -2,6 +2,7 @@
 
 #include "modules.h"
 #include "double.h"
+#include "utils/log.h"
 
 #include <vector>
 #include <iostream>
@@ -216,6 +217,33 @@ void MEPCoreTest::geneFunctionTest()
     compareMoved(original, movedFrom, moved);
 }
 
+void MEPCoreTest::geneMutationTest()
+{
+    auto operations = createOperations();
+    Gene gene(20, operations[3].get());
+    mep::IdxArgs geneArgs = { 1, 2, 3 };
+    gene.addChild(geneArgs[0]);
+    gene.addChild(geneArgs[1]);
+    gene.addChild(geneArgs[2]);
+    mep::IdxArgs args = { 5, 6, 2 };
+    Gene argsMutated(gene, args);
+    Gene attrMutated(gene, operations[2].get());
+
+    QCOMPARE(argsMutated.children().size(), (size_t)3);
+    uint i = 0;
+    for(const auto child: argsMutated.children()) {
+        QCOMPARE(child, args[i]);
+        ++i;
+    }
+
+    QCOMPARE(attrMutated.children().size(), (size_t)2);
+    i = 0;
+    for(const auto child: attrMutated.children()) {
+        QCOMPARE(child, geneArgs[i]);
+        ++i;
+    }
+}
+
 Chromosome createChromosome(std::vector<OperationPtr>& operations,
                             uint startIdx, uint size,
                             Color::Code code = Color::DEFAULT)
@@ -349,9 +377,288 @@ void MEPCoreTest::chromosomeMutationTest()
 
 void MEPCoreTest::chromosomeRunTest()
 {
+    Double reference = { 5 };
+    DoubleFitness fitness(reference);
     auto operations = createOperations();
     Chromosome chromosome = createChromosome(operations, 0, 10);
     std::cout << chromosome << std::endl;
-    chromosome.run();
+    chromosome.run(&fitness);
+    std::cout << chromosome.write() << std::endl;
+    QCOMPARE(chromosome.score(), (uint)4);
+}
+
+void MEPCoreTest::randomTest()
+{
+    Random rand;
+    std::map<uint, uint> hist;
+    for(int i = 1; i < 20; ++i) {
+        for(int k = 0; k < 2; ++k)
+            ++hist[rand(i-1)];
+    }
+    for (auto p : hist) {
+        std::cout << p.first << " : "  << std::to_string(p.second) << std::string(p.second, '*') << '\n';
+    }
+}
+
+struct Int {
+    Int(int val): value(val) { std::cout << "Int constructor" << std::endl; }
+    Int(const Int& val) { std::cout << "Copy" << std::endl; }
+    Int(Int&& val) { std::cout << "Copy" << std::endl; }
+    Int& operator=(const Int& val) { std::cout << "Copy" << std::endl; }
+    Int& operator=(Int&& val) { std::cout << "Copy" << std::endl; }
+    ~Int() { std::cout << "Int destructor" << std::endl; }
+    int value;
+};
+
+void MEPCoreTest::ptrSetTest()
+{
+    std::map<Int*, int> ptrs;
+    for(int i = 0; i < 3; ++i) {
+        ptrs[new Int(i)] = 0;
+    }
+    PtrSet<Int> set;
+    auto iter = ptrs.begin();
+    set.registerPtr(1.0/3, (iter++)->first);
+    set.registerPtr(1.0/3, (iter++)->first);
+    set.registerPtr(1.0/3, (iter++)->first);
+
+    for(int i = 0; i < 2000; ++i) {
+        ++ptrs[set.rand()];
+    }
+
+    for (auto p : ptrs) {
+        std::cout << p.first << " : "  << std::to_string(p.second)
+                  << std::string(p.second/20, '*') << '\n';
+    }
+}
+
+void MEPCoreTest::operationSetTest()
+{
+    OperationSet set(Double{10}, "ten");
+    Function* fun = new Function(div, "division", 2);
+    set.registerPtr(0.1, Double{10}, "ten");
+    set.registerPtr(0.01, Double{20}, "twenty");
+    set.registerPtr(0.01, add, "addition", 3);
+    set.registerPtr(0.58, sub, "subtraction", 2);
+    set.registerPtr(0.3, fun);
+
+    std::map<double, int> ptrs;
+    for(int i = 0; i < 2000; ++i) {
+        Operation* op = set.rand();
+        std::vector<Double> _args;
+        std::vector<Double*> args;
+        for(uint i = 0; i < op->nArgs(); ++i) {
+            _args.push_back({(i+1)*10.0});
+            args.push_back(&_args.back());
+        }
+        Double result = op->run(args);
+        ++ptrs[std::floor(result.value)];
+    }
+
+    for (auto p : ptrs) {
+        std::cout << p.first << " : "  << std::to_string(p.second)
+                  << std::string(p.second/20, '*') << '\n';
+    }
+}
+
+void selectionHist(Selection *selection) {
+    std::map<uint, uint> hist;
+    int maxIter = 200;
+    for(int i = 0; i < maxIter; ++i) {
+        ++hist[selection->select()];
+    }
+    for (auto p : hist) {
+        std::cout << p.first << " : "  << std::to_string(p.second)
+                  << std::string((p.second*100)/maxIter, '*') << '\n';
+    }
+}
+
+void MEPCoreTest::TournamentTest()
+{
+    TournamentSelection selection(4);
+    selection.add(0, 100, 0); // 0.0111
+    selection.add(1, 200, 1); // 0.0222
+    selection.add(2, 1000, 2);// 0.1111
+    selection.add(3, 2000, 3);// 0.2222
+    selection.add(4, 3000, 4);// 0.3333
+    selection.add(5, 5000, 5);// 0.5555
+    selection.add(6, 9000, 6);// 1
+
+    selectionHist(&selection);
+
+    selection.add(7, 9000, 7);// 1
+    selection.select();
+}
+
+void MEPCoreTest::RouletteTest()
+{
+    RankRouletteSelection rankSelection{};
+    rankSelection.add(0, 100, 0); // 0.25
+    rankSelection.add(1, 200, 1); // 0.21
+    rankSelection.add(2, 1000, 2);// 0.18
+    rankSelection.add(3, 2000, 3);// 0.14
+    rankSelection.add(4, 3000, 4);// 0.11
+    rankSelection.add(5, 5000, 5);// 0.07
+    rankSelection.add(6, 9000, 6);// 0.04
+
+    selectionHist(&rankSelection);
+
+    FitnessRouletteSelection fitnessSelection{};
+    fitnessSelection.add(0, 100, 0); // 0.21
+    fitnessSelection.add(1, 200, 1); // 0.21
+    fitnessSelection.add(2, 1000, 2);// 0.18
+    fitnessSelection.add(3, 2000, 3);// 0.16
+    fitnessSelection.add(4, 3000, 4);// 0.14
+    fitnessSelection.add(5, 5000, 5);// 0.09
+    fitnessSelection.add(6, 9000, 6);// ~0.0
+
+    selectionHist(&fitnessSelection);
+
+    fitnessSelection.add(7, 1, 7);
+
+    selectionHist(&fitnessSelection);
+}
+
+OperationSet createOperationSet() {
+    OperationSet set(Double{100}, "one hundred");
+    Function* fun = new Function(div, "division", 2);
+    set.registerPtr(0.15, Double{10}, "ten");
+    set.registerPtr(0.1, Double{20}, "twenty");
+    set.registerPtr(0.3, add, "addition", 3);
+    set.registerPtr(0.1, sub, "subtraction", 2);
+    set.registerPtr(0.3, mult, "multiplication", 3);
+    set.registerPtr(0.05, fun);
+
+    return set;
+}
+
+void MEPCoreTest::mutationTest()
+{
+    auto set = createOperationSet();
+    DoubleFitness fitness(Double{0});
+
+    Chromosome individual(0, 10);
+    individual.init(set, 0);
+    individual.run(&fitness);
+    std::cout << individual << std::endl;
+    std::cout << individual.write() << std::endl;
+
+    Chromosome child(individual);
+
+    child.setColor(Color::BLUE);
+    ArgumentMutation argMutation;
+    argMutation(set, child);
+    std::cout << child << std::endl;
+    std::cout << child.write() << std::endl;
+
+    child.setColor(Color::RED);
+    AttributeMutation attMutation;
+    attMutation(set, child);
+    std::cout << child << std::endl;
+    std::cout << child.write() << std::endl;
+
+    child.setColor(Color::GREEN);
+    CombinedMutation comMutation;
+    comMutation(set, child);
+    std::cout << child << std::endl;
+    std::cout << child.write() << std::endl;
+
+    for(int i = 0; i < 10; ++i) {
+        argMutation(set, child);
+    }
+    for(int i = 0; i < 10; ++i) {
+        comMutation(set, child);
+    }
+    for(int i = 0; i < 10; ++i) {
+        attMutation(set, child);
+    }
+}
+
+void MEPCoreTest::crossoverTest()
+{
+    auto set = createOperationSet();
+    DoubleFitness fitness(Double{0});
+
+    Chromosome parent1(0, 10);
+    parent1.init(set, 0);
+    std::cout << parent1 << std::endl;
+    std::cout << parent1.write() << std::endl;
+    Chromosome parent2(10, 10);
+    parent2.init(set, 10);
+    std::cout << parent2 << std::endl;
+    std::cout << parent2.write() << std::endl;
+
+    OnePointCrossover opCrossover;
+    Chromosome child1 = opCrossover(parent1, parent2);
+    std::cout << child1 << std::endl;
+    std::cout << child1.write() << std::endl;
+
+    TwoPointCrossover tpCrossover;
+    Chromosome child2 = tpCrossover(parent1, parent2);
+    std::cout << child2 << std::endl;
+    std::cout << child2.write() << std::endl;
+
+    UniformCrossover uniCrossover;
+    Chromosome child3 = uniCrossover(parent1, parent2);
+    std::cout << child3 << std::endl;
+    std::cout << child3.write() << std::endl;
+
+    for(int i = 0; i < 10; ++i) {
+        Chromosome child = opCrossover(parent1, parent2);
+    }
+    for(int i = 0; i < 10; ++i) {
+        Chromosome child = tpCrossover(parent1, parent2);
+    }
+    for(int i = 0; i < 10; ++i) {
+        Chromosome child = uniCrossover(parent1, parent2);
+    }
+}
+
+void MEPCoreTest::populationTest()
+{
+    mep::Log::MAX_LEVEL = mep::LogLevel::DEBUG;
+    Fitness* fitness = new DoubleFitness(Double{0});
+    Selection* selection = new RankRouletteSelection();
+    Terminal terminal(Double{10}, "ten");
+    Population population(10, terminal, selection, fitness);
+    population.operationSet.registerPtr(
+                0.05, new Terminal(Double{20}, "twenty"));
+    population.operationSet.registerPtr(
+                0.1, new Function(sub, "subtraction", 2));
+    population.operationSet.registerPtr(
+                0.1, new Function(add, "addition", 3));
+    population.operationSet.registerPtr(
+                0.05, new Function(mult, "multiplication", 3));
+    population.operationSet.registerPtr(
+                0.7, new Function(div, "division", 2));
+    population.init(10);
+    population.crossoverSet.registerPtr(0.4, new OnePointCrossover());
+    population.crossoverSet.registerPtr(0.4, new TwoPointCrossover());
+    population.crossoverSet.registerPtr(0.2, new UniformCrossover());
+    population.mutationSet.registerPtr(0.2, new ArgumentMutation());
+    population.mutationSet.registerPtr(0.2, new AttributeMutation());
+    population.mutationSet.registerPtr(0.6, new CombinedMutation());
+    std::vector<uint> scores;
+    for(int i = 0; i < 1000; ++i) {
+        scores.push_back(population.bestScore());
+        auto child = population.reproduce();
+        population.add(std::move(child));
+    }
+    for(const auto score : scores)
+        std::cout << score << " ";
+    std::cout << endl;
+}
+
+using Log = mep::Log;
+using GeneLog = mep::GeneLog;
+using ChromosomeLog = mep::ChromosomeLog;
+using PopulationLog = mep::PopulationLog;
+
+void MEPCoreTest::logTest()
+{
+    using namespace mep;
+    std::string name = "dfadsf";
+    GeneLog(ERROR) << "Damian" << name;
+    PopulationLog(ERROR) << name;
 }
 
