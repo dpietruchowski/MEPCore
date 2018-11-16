@@ -1,4 +1,3 @@
-add_subdirectory(gene)
 
-add_executable(MEPCore main.cpp)
-target_link_libraries (MEPCore mepgene)
+include(${CMAKE_CURRENT_LIST_DIR}/core/CMakeLists.txt)
+include(${CMAKE_CURRENT_LIST_DIR}/utils/CMakeLists.txt)

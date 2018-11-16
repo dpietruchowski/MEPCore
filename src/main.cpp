@@ -10,20 +10,6 @@ int add(const vector<int*>& args) {
   return *args[0] + *args[1];
 }
 
-struct MepModel {
-  using Type = int;
-  static uint assess(const int& result) {
-    return result;
-  }
-  static uint clear(int& result) {
-    result = 0;
-  }
-  static void show(int result) {
-    cout << "result: " << result << endl;
-  }
-  mep::Operation<int>* operation;
-};
-
 int main() {
   mep::Terminal<int> term1{10, "ten"};
   cout << term1.run({}) << endl;
