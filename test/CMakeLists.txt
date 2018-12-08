@@ -11,3 +11,4 @@ endmacro()
 
 create_test("testoperation")
 create_test("testutils")
+create_test("testgene")
